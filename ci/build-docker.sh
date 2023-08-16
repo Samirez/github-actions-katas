@@ -1,6 +1,5 @@
 #!/bin/bash
 docker_username_lower=$(echo "$docker_username" | tr '[:upper:]' '[:lower:]')
-echo "$docker_password" | docker login ghcr.io --username "$docker_username_lower" --password-stdin
-docker push "ghcr.io/$docker_username_lower/micronaut-app:1.0-${GIT_COMMIT::8}"
-docker push "ghcr.io/$docker_username_lower/micronaut-app:latest" &
-wait
+[[ -z "${GIT_COMMIT}" ]] && Tag='local' || Tag="${GIT_COMMIT::8}"
+[[ -z "${docker_username}" ]] && DockerRepo='' || DockerRepo="ghcr.io/${docker_username_lower}/"
+docker build -t "${DockerRepo}micronaut-app:latest" -t "${DockerRepo}micronaut-app:1.0-$Tag" app/
